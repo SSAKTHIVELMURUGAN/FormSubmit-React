@@ -19,3 +19,12 @@ Before you begin, ensure you have the following installed on your machine:
    ```bash
    git clone https://github.com/SSAKTHIVELMURUGAN/FormSubmit-React.git
    cd FormSubmit-React
+## Run the React App Locally
+
+To run the app locally, use:
+
+```bash
+npm start
+
+The app will be available at http://localhost:3000.
+
