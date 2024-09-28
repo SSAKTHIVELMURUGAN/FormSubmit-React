@@ -2,63 +2,47 @@ pipeline {
     agent any
 
     environment {
-        // Replace these with your actual Docker Hub credentials stored in Jenkins
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
-        DOCKER_HUB_REPO = 'yourdockerhubusername/react-app'
+        // Define the Docker image name (your Docker Hub username)
+        IMAGE_NAME = "sakthivelmurugan2003/form-react-app"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                // Checkout the code from your Git repository
-                git 'https://github.com/yourusername/your-repo.git'
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    // Use npm to install dependencies
-                    bat 'npm install'
-                }
-            }
-        }
-
-        stage('Build React App') {
-            steps {
-                script {
-                    // Build the React application
-                    bat 'npm run build'
-                }
+                // Clone the repository containing your React app
+                git 'https://github.com/SSAKTHIVELMURUGAN/FormSubmit-React.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image using the Dockerfile
-                    bat 'docker build -t %DOCKER_HUB_REPO%:latest .'
+                    // Build the Docker image using the provided Dockerfile
+                    def app = docker.build("$IMAGE_NAME:latest")
                 }
             }
         }
 
-        stage('Push Docker Image to Docker Hub') {
+        stage('Docker Hub Login') {
             steps {
                 script {
-                    // Login to Docker Hub
-                    bat 'echo %DOCKER_HUB_CREDENTIALS_PSW% | docker login -u %DOCKER_HUB_CREDENTIALS_USR% --password-stdin'
-
-                    // Push the Docker image
-                    bat 'docker push %DOCKER_HUB_REPO%:latest'
+                    // Login to Docker Hub using credentials stored in Jenkins
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        echo 'Logged into Docker Hub'
+                    }
                 }
             }
         }
-    }
 
-    post {
-        always {
-            // Clean up workspace
-            cleanWs()
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Push the Docker image to Docker Hub
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        docker.image("$IMAGE_NAME:latest").push()
+                    }
+                }
+            }
         }
     }
 }
