@@ -6,13 +6,12 @@ pipeline {
         IMAGE_NAME = "sakthivelmurugan2003/form-react-app"
     }
 
-    stages {
-        stage('Checkout Code') {
-            steps {
-                // Clone the repository containing your React app
-                git 'https://github.com/SSAKTHIVELMURUGAN/FormSubmit-React.git'
-            }
-        }
+   stage('Checkout Code') {
+    steps {
+        // Clone the repository containing your React app
+        git branch: 'main', url: 'https://github.com/SSAKTHIVELMURUGAN/FormSubmit-React.git'
+    }
+}
 
         stage('Build Docker Image') {
             steps {
